@@ -1,4 +1,5 @@
 CXX := g++
+CXX := ${LLVM_HOME}/bin/clang++
 CFLAGS := -std=c++17 -I./ -lrt -lpthread -O3
 
 all: ALL_CCEH Cuckoo LinearProbing Extendible Level Path

@@ -1,7 +1,8 @@
 .PHONY: all clean
 
-CXX := g++ -O3 -std=c++17
-CFLAGS := -I./ -lrt
+CXX := g++
+CXX := ${LLVM_HOME}/bin/clang++
+CFLAGS := -O3 -std=c++17 -I./ -lrt
 
 all: test
 
