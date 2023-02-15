@@ -35,7 +35,7 @@ int main(int argc, char* argv[]){
     uint64_t* keys = (uint64_t*)malloc(sizeof(uint64_t)*numData);
 
     ifstream ifs;
-    string dataset = "/home/chahg0129/dataset/input_rand.txt";
+    string dataset = "input_rand.txt";
     ifs.open(dataset);
     if(!ifs){
 	cerr << "no file" << endl;
