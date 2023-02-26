@@ -39,7 +39,8 @@ int main (int argc, char* argv[])
 	cerr << "Usage: " << argv[0] << " path numData" << endl;
 	exit(1);
     }
-    const size_t initialSize = 1024*16;
+    // const size_t initialSize = 1024*16;
+    const size_t initialSize = 1024;
     char path[32];
     strcpy(path, argv[1]);
     int numData = atoi(argv[2]);
