@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <stdint.h>
+#include <emmintrin.h>
 
 #define CPU_FREQ_MHZ (1994)  // cat /proc/cpuinfo
 #define CAS(_p, _u, _v)  (__atomic_compare_exchange_n (_p, _u, _v, false, __ATOMIC_ACQUIRE, __ATOMIC_ACQUIRE))
@@ -24,7 +25,8 @@ static inline unsigned long ReadTSC(void) {
 }
 
 inline void mfence(void) {
-  asm volatile("mfence":::"memory");
+  // asm volatile("mfence":::"memory");
+  _mm_sfence();
 }
 
 inline void clflush(char* data, size_t len) {
@@ -32,7 +34,8 @@ inline void clflush(char* data, size_t len) {
   mfence();
   for (; ptr < data+len; ptr+=kCacheLineSize) {
     unsigned long etcs = ReadTSC() + (unsigned long) (kWriteLatencyInNS*CPU_FREQ_MHZ/1000);
-    asm volatile("clflush %0" : "+m" (*(volatile char*)ptr));
+    //asm volatile("clflush %0" : "+m" (*(volatile char*)ptr));
+    _mm_clflush((const void*)ptr);
     while (ReadTSC() < etcs) CPUPause();
     clflushCount++;
   }
