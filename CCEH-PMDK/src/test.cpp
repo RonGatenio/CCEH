@@ -31,8 +31,12 @@ void clear_cache() {
 
 int main (int argc, char* argv[])
 {
+#ifdef MULTITHREAD
+    if(argc < 4){
+#else
     if(argc < 3){
-	cerr << "Usage: " << argv[0] << "path numData" << endl;
+#endif
+	cerr << "Usage: " << argv[0] << " path numData" << endl;
 	exit(1);
     }
     const size_t initialSize = 1024*16;
@@ -78,7 +82,11 @@ int main (int argc, char* argv[])
     uint64_t* keys = new uint64_t[numData];
 
     ifstream ifs;
-    string dataset = "/home/chahg0129/dataset/input_rand.txt";
+    string dataset = "input_rand.txt";
+    if(access(path, 0) != 0){
+		cerr << "No file found." << endl;
+	exit(1);
+	}
     ifs.open(dataset);
     if (!ifs){
 	cerr << "No file." << endl;
