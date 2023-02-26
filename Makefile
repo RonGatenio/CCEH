@@ -1,6 +1,6 @@
 CXX := g++
 CXX := ${LLVM_HOME}/bin/clang++ -fsanitize=thread
-CFLAGS := -std=c++17 -I./ -lrt -lpthread -O3
+CFLAGS := -std=c++17 -I./ -lrt -lpthread -O3 -g
 
 all: ALL_CCEH Cuckoo LinearProbing Extendible Level Path
 

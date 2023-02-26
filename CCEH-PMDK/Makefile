@@ -2,7 +2,7 @@
 
 CXX := g++
 CXX := ${LLVM_HOME}/bin/clang++ -fsanitize=thread
-CFLAGS := -O3 -std=c++17 -I./ -lrt
+CFLAGS := -O3 -std=c++17 -I./ -lrt -g
 
 all: test
 
