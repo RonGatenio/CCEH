@@ -77,6 +77,8 @@ int main (int argc, char* argv[])
 		exists = true;
     }
 
+	cerr << "0:PMEM:" << pop << ":" << POOL_SIZE << "\n"  << endl;
+
 #ifdef MULTITHREAD
     cout << "Params: numData(" << numData << "), numThreads(" << numThreads << ")" << endl;
 #else
