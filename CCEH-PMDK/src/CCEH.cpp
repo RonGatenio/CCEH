@@ -19,12 +19,12 @@ using namespace std;
 void Segment::execute_path(PMEMobjpool* pop, vector<pair<size_t, size_t>>& path, Key_t& key, Value_t value){
     for(int i=path.size()-1; i>0; --i){
 	bucket[path[i].first] = bucket[path[i-1].first];
-	pmemobj_persist(pop, (char*)&bucket[path[i].first], sizeof(Pair));
+	_pmemobj_persist(pop, (char*)&bucket[path[i].first], sizeof(Pair));
     }
     bucket[path[0].first].value = value;
     mfence();
     bucket[path[0].first].key = key;
-    pmemobj_persist(pop, (char*)&bucket[path[0].first], sizeof(Pair));
+    _pmemobj_persist(pop, (char*)&bucket[path[0].first], sizeof(Pair));
 }
 
 void Segment::execute_path(vector<pair<size_t, size_t>>& path, Pair _bucket){
@@ -136,7 +136,7 @@ TOID(struct Segment)* Segment::Split(PMEMobjpool* pop){
 	}
     }
 
-    pmemobj_persist(pop, (char*)D_RO(split[1]), sizeof(struct Segment));
+    _pmemobj_persist(pop, (char*)D_RO(split[1]), sizeof(struct Segment));
     return split;
 #else
     TOID(struct Segment)* split = new TOID(struct Segment)[2];
@@ -156,8 +156,8 @@ TOID(struct Segment)* Segment::Split(PMEMobjpool* pop){
 	}
     }
 
-    pmemobj_persist(pop, (char*)D_RO(split[0]), sizeof(struct Segment));
-    pmemobj_persist(pop, (char*)D_RO(split[1]), sizeof(struct Segment));
+    _pmemobj_persist(pop, (char*)D_RO(split[0]), sizeof(struct Segment));
+    _pmemobj_persist(pop, (char*)D_RO(split[1]), sizeof(struct Segment));
 
     return split;
 #endif
@@ -225,7 +225,7 @@ RETRY:
 		D_RW(target)->bucket[loc].value = value;
 		mfence();
 		D_RW(target)->bucket[loc].key = key;
-		pmemobj_persist(pop, (char*)&D_RO(target)->bucket[loc], sizeof(Pair));
+		_pmemobj_persist(pop, (char*)&D_RO(target)->bucket[loc], sizeof(Pair));
 		/* release segment exclusive lock */
 		D_RW(target)->unlock();
 		return;
@@ -244,7 +244,7 @@ RETRY:
 		D_RW(target)->bucket[loc].value = value;
 		mfence();
 		D_RW(target)->bucket[loc].key = key;
-		pmemobj_persist(pop, (char*)&D_RO(target)->bucket[loc], sizeof(Pair));
+		_pmemobj_persist(pop, (char*)&D_RO(target)->bucket[loc], sizeof(Pair));
 		D_RW(target)->unlock();
 		return;
 	    }
@@ -318,13 +318,13 @@ DIR_RETRY:
 	    }
 	}
 
-	pmemobj_persist(pop, (char*)&D_RO(D_RO(_dir)->segment)[0], sizeof(TOID(struct Segment))*D_RO(_dir)->capacity);
-	pmemobj_persist(pop, (char*)&_dir, sizeof(struct Directory));
+	_pmemobj_persist(pop, (char*)&D_RO(D_RO(_dir)->segment)[0], sizeof(TOID(struct Segment))*D_RO(_dir)->capacity);
+	_pmemobj_persist(pop, (char*)&_dir, sizeof(struct Directory));
 	dir = _dir;
-	pmemobj_persist(pop, (char*)&dir, sizeof(TOID(struct Directory)));
+	_pmemobj_persist(pop, (char*)&dir, sizeof(TOID(struct Directory)));
 #ifdef INPLACE
 	D_RW(s[0])->local_depth++;
-	pmemobj_persist(pop, (char*)&D_RO(s[0])->local_depth, sizeof(size_t));
+	_pmemobj_persist(pop, (char*)&D_RO(s[0])->local_depth, sizeof(size_t));
 	/* release segment exclusive lock */
 	D_RW(s[0])->sema = 0;
 #endif
@@ -341,28 +341,28 @@ DIR_RETRY:
 	    if(x%2 == 0){
 		D_RW(D_RW(dir)->segment)[x+1] = s[1];
 #ifdef INPLACE
-		pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x+1], sizeof(TOID(struct Segment)));
+		_pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x+1], sizeof(TOID(struct Segment)));
 #else
 		mfence();
 		D_RW(D_RW(dir)->segment)[x] = s[0];
-		pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x], sizeof(TOID(struct Segment))*2);
+		_pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x], sizeof(TOID(struct Segment))*2);
 #endif
 	    }
 	    else{
 		D_RW(D_RW(dir)->segment)[x] = s[1];
 #ifdef INPLACE
-		pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x], sizeof(TOID(struct Segment)));
+		_pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x], sizeof(TOID(struct Segment)));
 #else
 		mfence();
 		D_RW(D_RW(dir)->segment)[x-1] = s[0];
-		pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x-1], sizeof(TOID(struct Segment))*2);
+		_pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[x-1], sizeof(TOID(struct Segment))*2);
 #endif
 	    }
 	    D_RW(dir)->unlock();
 
 #ifdef INPLACE
 	    D_RW(s[0])->local_depth++;
-	    pmemobj_persist(pop, (char*)&D_RO(s[0])->local_depth, sizeof(size_t));
+	    _pmemobj_persist(pop, (char*)&D_RO(s[0])->local_depth, sizeof(size_t));
 	    /* release target segment exclusive lock */
 	    D_RW(s[0])->sema = 0;
 #endif
@@ -374,17 +374,17 @@ DIR_RETRY:
 		D_RW(D_RW(dir)->segment)[loc+stride/2+i] = s[1];
 	    }
 #ifdef INPLACE
-	    pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[loc+stride/2], sizeof(TOID(struct Segment))*stride/2);
+	    _pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[loc+stride/2], sizeof(TOID(struct Segment))*stride/2);
 #else
 	    for(int i=0; i<stride/2; ++i){
 		D_RW(D_RW(dir)->segment)[loc+i] = s[0];
 	    }
-	    pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[loc], sizeof(TOID(struct Segment))*stride);
+	    _pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[loc], sizeof(TOID(struct Segment))*stride);
 #endif
 	    D_RW(dir)->unlock();
 #ifdef INPLACE
 	    D_RW(s[0])->local_depth++;
-	    pmemobj_persist(pop, (char*)&D_RO(s[0])->local_depth, sizeof(size_t));
+	    _pmemobj_persist(pop, (char*)&D_RO(s[0])->local_depth, sizeof(size_t));
 	    /* release target segment exclusive lock */
 	    D_RW(s[0])->sema = 0;
 #endif
@@ -472,12 +472,12 @@ void CCEH::Recovery(PMEMobjpool* pop){
 	for(int j=buddy-1; i<j; j--){
 	    if(D_RO(D_RO(D_RO(dir)->segment)[j])->local_depth != depth_cur){
 		D_RW(D_RW(dir)->segment)[j] = D_RO(D_RO(dir)->segment)[i];
-		pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[i], sizeof(TOID(struct Segment)));
+		_pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[i], sizeof(TOID(struct Segment)));
 	    }
 	}
 	i += stride;
     }
-    pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[0], sizeof(TOID(struct Segment))*D_RO(dir)->capacity);
+    _pmemobj_persist(pop, (char*)&D_RO(D_RO(dir)->segment)[0], sizeof(TOID(struct Segment))*D_RO(dir)->capacity);
 }
 
 

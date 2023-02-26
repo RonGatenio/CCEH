@@ -194,7 +194,7 @@ int main (int argc, char* argv[])
     cout << "Utilization: " << util << " %" << endl;
 
     D_RW(HashTable)->crashed = false;
-    pmemobj_persist(pop, (char*)&D_RO(HashTable)->crashed, sizeof(bool));
+    _pmemobj_persist(pop, (char*)&D_RO(HashTable)->crashed, sizeof(bool));
     pmemobj_close(pop);
     return 0;
 } 
