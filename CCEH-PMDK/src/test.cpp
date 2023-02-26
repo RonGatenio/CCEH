@@ -54,25 +54,27 @@ int main (int argc, char* argv[])
     TOID(CCEH) HashTable = OID_NULL;
 
     if(access(path, 0) != 0){
-	pop = pmemobj_create(path, "CCEH", POOL_SIZE, 0666);
-	if(!pop){
-	    perror("pmemoj_create");
-	    exit(1);
-	}
-	HashTable = POBJ_ROOT(pop, CCEH);
-	D_RW(HashTable)->initCCEH(pop, initialSize);
+		cerr << "Calling pmemobj_create\n" << endl;
+		pop = pmemobj_create(path, "CCEH", POOL_SIZE, 0666);
+		if(!pop){
+			perror("pmemoj_create");
+			exit(1);
+		}
+		HashTable = POBJ_ROOT(pop, CCEH);
+		D_RW(HashTable)->initCCEH(pop, initialSize);
     }
     else{
-	pop = pmemobj_open(path, "CCEH");
-	if(pop == NULL){
-	    perror("pmemobj_open");
-	    exit(1);
-	}
-	HashTable = POBJ_ROOT(pop, CCEH);
-	if(D_RO(HashTable)->crashed){
-	    D_RW(HashTable)->Recovery(pop);
-	}
-	exists = true;
+		cerr << "Calling pmemobj_open" << endl;
+		pop = pmemobj_open(path, "CCEH");
+		if(pop == NULL){
+			perror("pmemobj_open");
+			exit(1);
+		}
+		HashTable = POBJ_ROOT(pop, CCEH);
+		if(D_RO(HashTable)->crashed){
+			D_RW(HashTable)->Recovery(pop);
+		}
+		exists = true;
     }
 
 #ifdef MULTITHREAD
