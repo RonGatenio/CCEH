@@ -11,16 +11,16 @@
 using namespace std;
 
 void clear_cache(){
-    int* dummy = new int[1024*1024*256];
-    for(int i=0; i<1024*1024*256; i++){
-	dummy[i] = i;
-    }
+    // int* dummy = new int[1024*1024*256];
+    // for(int i=0; i<1024*1024*256; i++){
+	// dummy[i] = i;
+    // }
 
-    for(int i=100; i<1024*1024*256-100; i++){
-	dummy[i] = dummy[i-rand()%100] + dummy[i+rand()%100];
-    }
+    // for(int i=100; i<1024*1024*256-100; i++){
+	// dummy[i] = dummy[i-rand()%100] + dummy[i+rand()%100];
+    // }
 
-    delete[] dummy;
+    // delete[] dummy;
 }
 
 
