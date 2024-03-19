@@ -54,7 +54,7 @@ int main (int argc, char* argv[])
     TOID(CCEH) HashTable = OID_NULL;
 
     if(access(path, 0) != 0){
-		cerr << "Calling pmemobj_create\n" << endl;
+		cerr << "Calling pmemobj_create" << endl;
 		pop = pmemobj_create(path, "CCEH", POOL_SIZE, 0666);
 		if(!pop){
 			perror("pmemoj_create");
@@ -77,7 +77,6 @@ int main (int argc, char* argv[])
 		exists = true;
     }
 
-	cerr << "0:PMEM:" << pop << ":" << POOL_SIZE << "\n"  << endl;
 
 #ifdef MULTITHREAD
     cout << "Params: numData(" << numData << "), numThreads(" << numThreads << ")" << endl;
