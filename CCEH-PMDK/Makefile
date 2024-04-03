@@ -2,7 +2,7 @@
 
 CXX := clang++
 CFLAGS := -O3 -std=c++17 -I./ -lrt -g
-PRD_FLAGS := -fpass-plugin=/app/build/bin/PrdPass.so -l:/app/build/bin/cprd-x86_64.a -mclwb -mclflushopt -fuse-ld=gold -z muldefs
+PRD_FLAGS := ${PRD_C_FLAGS}
 
 all: test
 
