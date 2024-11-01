@@ -1,6 +1,6 @@
 CXX := clang++
 CFLAGS := -std=c++17 -I./ -lrt -lpthread -O3 -g
-PRD_FLAGS := -fpass-plugin=/app/build/bin/PrdPass.so -l:/app/build/bin/cprd-x86_64.a -mclwb -mclflushopt -fuse-ld=gold -z muldefs
+PRD_FLAGS := ${PRD_C_FLAGS}
 
 all: ALL_CCEH Cuckoo LinearProbing Extendible Level Path
 
