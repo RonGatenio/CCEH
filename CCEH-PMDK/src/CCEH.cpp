@@ -181,10 +181,10 @@ void CCEH::initCCEH(PMEMobjpool* pop, size_t initCap){
     POBJ_ALLOC(pop, &dir, struct Directory, sizeof(struct Directory), NULL, NULL);
     D_RW(dir)->initDirectory(static_cast<size_t>(log2(initCap)));
     POBJ_ALLOC(pop, &D_RW(dir)->segment, TOID(struct Segment), sizeof(TOID(struct Segment))*D_RO(dir)->capacity, NULL, NULL);
-
+	_pmemobj_persist(pop, (char*)D_RO(dir), sizeof(struct Directory));
     for(int i=0; i<D_RO(dir)->capacity; ++i){
 		POBJ_ALLOC(pop, &D_RO(D_RO(dir)->segment)[i], struct Segment, sizeof(struct Segment), NULL, NULL);
-		D_RW(D_RW(D_RW(dir)->segment)[i])->initSegment(static_cast<size_t>(log2(initCap)));
+		D_RW(D_RW(D_RW(dir)->segment)[i])->initSegment(static_cast<size_t>(log2(initCap)));_pmemobj_persist(pop, (char*)D_RO(D_RO(D_RO(dir)->segment)[i]), sizeof(struct Segment));
     }
 }
  
